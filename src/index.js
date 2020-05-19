@@ -69,7 +69,6 @@ function registerFirebaseServiceWorker() {
 //     getFcmToken();
 //   });
 // }
-
 messaging
   .getToken()
   .then((fcmToken) => {
@@ -109,6 +108,15 @@ messaging.onTokenRefresh(() => {
 
 messaging.onMessage((payload) => {
   console.log("Message received. ", payload);
+  // show bubble message even the webpage is in foreground
+  // navigator.serviceWorker
+  //   .getRegistration("/firebase-cloud-messaging-push-scope")
+  //   .then((registration) => {
+  //     registration.showNotification(
+  //       payload.notification.title,
+  //       payload.notification
+  //     );
+  //   });
 });
 
 ReactDOM.render(
