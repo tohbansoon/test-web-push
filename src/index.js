@@ -3,7 +3,8 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { firebaseConfig, messagingPublickKey } from "./config";
-import firebase from "firebase";
+import firebase from "firebase/app";
+import "firebase/messaging";
 
 // step 1: register service worker
 registerFirebaseServiceWorker();
@@ -14,13 +15,13 @@ const messaging = firebase.messaging(app);
 messaging.usePublicVapidKey(messagingPublickKey);
 
 // step 3: getFcmToken
-getFcmToken();
+// getFcmToken();
 
 // step 4: listen to fcmToken changed
-listenFcmTokenChanged();
+// listenFcmTokenChanged();
 
 // step 5: start to listening notification message
-onListenWebPushNotif();
+// onListenWebPushNotif();
 
 function registerFirebaseServiceWorker() {
   if ("serviceWorker" in navigator) {
@@ -35,15 +36,59 @@ function registerFirebaseServiceWorker() {
   }
 }
 
-function unRegisterFirebaseServiceWorker() {
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.ready.then((registration) => {
-      registration.unregister();
-    });
-  }
-}
+// function unRegisterFirebaseServiceWorker() {
+//   if ("serviceWorker" in navigator) {
+//     navigator.serviceWorker.ready.then((registration) => {
+//       registration.unregister();
+//     });
+//   }
+// }
 
-function getFcmToken() {
+// function getFcmToken() {
+//   messaging
+//     .getToken()
+//     .then((fcmToken) => {
+//       if (fcmToken) {
+//         // receoved fcmToken
+//         console.log("fcmToken: ", fcmToken);
+//       } else {
+//         // Show permission request.
+//         console.log(
+//           "No Instance ID token available. Request permission to generate one."
+//         );
+//       }
+//     })
+//     .catch((err) => {
+//       console.log("An error occurred while retrieving token. ", err);
+//     });
+// }
+
+// function listenFcmTokenChanged() {
+//   messaging.onTokenRefresh(() => {
+//     console.log("fcm token changed...");
+//     getFcmToken();
+//   });
+// }
+
+messaging
+  .getToken()
+  .then((fcmToken) => {
+    if (fcmToken) {
+      // receoved fcmToken
+      console.log("fcmToken: ", fcmToken);
+    } else {
+      // Show permission request.
+      console.log(
+        "No Instance ID token available. Request permission to generate one."
+      );
+    }
+  })
+  .catch((err) => {
+    console.log("An error occurred while retrieving token. ", err);
+  });
+
+messaging.onTokenRefresh(() => {
+  console.log("fcm token changed...");
   messaging
     .getToken()
     .then((fcmToken) => {
@@ -60,20 +105,11 @@ function getFcmToken() {
     .catch((err) => {
       console.log("An error occurred while retrieving token. ", err);
     });
-}
+});
 
-function listenFcmTokenChanged() {
-  messaging.onTokenRefresh(() => {
-    console.log("fcm token changed...");
-    getFcmToken();
-  });
-}
-
-function onListenWebPushNotif() {
-  messaging.onMessage((payload) => {
-    console.log("Message received. ", payload);
-  });
-}
+messaging.onMessage((payload) => {
+  console.log("Message received. ", payload);
+});
 
 ReactDOM.render(
   <React.StrictMode>
